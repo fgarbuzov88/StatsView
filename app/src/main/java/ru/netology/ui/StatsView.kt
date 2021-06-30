@@ -91,6 +91,8 @@ class StatsView @JvmOverloads constructor(
             var angle = 360 * (datum / data.sum())
             paint.color = colors.getOrNull(index) ?: randomColor()
             canvas.drawArc(circle, startFrom, angle, false, paint)
+            paint.color = colors[0]
+            canvas.drawArc(circle, -90F, 1F, false, paint)
             startFrom += angle
         }
 
