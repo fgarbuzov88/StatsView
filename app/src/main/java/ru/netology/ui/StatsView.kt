@@ -61,6 +61,13 @@ class StatsView @JvmOverloads constructor(
         strokeJoin = Paint.Join.ROUND
     }
 
+    private val emptyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = lineWith
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
+    }
+
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         Paint.Style.FILL
         textAlign = Paint.Align.CENTER
@@ -87,8 +94,11 @@ class StatsView @JvmOverloads constructor(
 
         var startFrom = -90F
 
+        emptyPaint.color = resources.getColor(R.color.grey, resources.newTheme())
+        canvas.drawCircle(center.x, center.y, radius, emptyPaint)
+
         for ((index, datum) in data.withIndex()) {
-            var angle = 360 * (datum / data.sum())
+            var angle = 360F * datum
             paint.color = colors.getOrNull(index) ?: randomColor()
             canvas.drawArc(circle, startFrom, angle, false, paint)
             paint.color = colors[0]
@@ -97,7 +107,7 @@ class StatsView @JvmOverloads constructor(
         }
 
         canvas.drawText(
-            "%.2f%%".format(100F),
+            "%.2f%%".format(data.sum() * 100),
             center.x,
             center.y + textPaint.textSize / 4,
             textPaint,
