@@ -88,14 +88,14 @@ class StatsView @JvmOverloads constructor(
         var startFrom = -90F
 
         for ((index, datum) in data.withIndex()) {
-            var angle = 360 * datum
+            var angle = 360 * (datum / data.sum())
             paint.color = colors.getOrNull(index) ?: randomColor()
             canvas.drawArc(circle, startFrom, angle, false, paint)
             startFrom += angle
         }
 
         canvas.drawText(
-            "%.2f%%".format(data.sum() * 100),
+            "%.2f%%".format(100F),
             center.x,
             center.y + textPaint.textSize / 4,
             textPaint,
