@@ -30,7 +30,7 @@ class StatsView @JvmOverloads constructor(
     private var lineWith = AndroidUtils.dp(context, 5F).toFloat()
     private var fontSize = AndroidUtils.dp(context, 40F).toFloat()
     private var colors = emptyList<Int>()
-    private var fillingType = emptyList<Int>()
+    private var fillingType = 0
 
     private var progress = 0F
     private var valueAnimator: ValueAnimator? = null
@@ -57,10 +57,7 @@ class StatsView @JvmOverloads constructor(
                     randomColor()
                 )
             )
-            fillingType = listOf(
-                getInteger(R.styleable.StatsView_fillingType, 0),
-                getInteger(R.styleable.StatsView_fillingType, 1)
-            )
+            fillingType = getInteger(R.styleable.StatsView_fillingType, 0)
         }
     }
 
@@ -121,7 +118,7 @@ class StatsView @JvmOverloads constructor(
             if (startFrom > maxAngle) return
 
             paint.color = colors.getOrNull(index) ?: randomColor()
-            setFillingType(fillingType[0], canvas, startFrom, angle, newAngle)
+            setFillingType(fillingType, canvas, startFrom, angle, newAngle)
             paint.color = colors[0]
             canvas.drawArc(circle, -90F, 1F, false, paint)
 
@@ -137,15 +134,13 @@ class StatsView @JvmOverloads constructor(
         newAngle: Float
     ) {
         when (fillingType) {
-            0 -> canvas.drawArc(
+            Type.SYNCHRONOUS.fillingType -> canvas.drawArc(
                 circle, startFrom, angle * progress, false, paint
             )
-            1 -> canvas.drawArc(
+            Type.SUCCESSIVE.fillingType -> canvas.drawArc(
                 circle, startFrom, newAngle, false, paint
             )
         }
-        invalidate()
-        requestLayout()
     }
 
     private fun update() {
@@ -166,6 +161,12 @@ class StatsView @JvmOverloads constructor(
             it.start()
         }
     }
+
+    enum class Type(val fillingType: Int) {
+        SYNCHRONOUS(0),
+        SUCCESSIVE(1)
+    }
 }
 
 private fun randomColor() = Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt())
+
