@@ -30,6 +30,7 @@ class StatsView @JvmOverloads constructor(
     private var lineWith = AndroidUtils.dp(context, 5F).toFloat()
     private var fontSize = AndroidUtils.dp(context, 40F).toFloat()
     private var colors = emptyList<Int>()
+    private var fillingType = emptyList<Int>()
 
     private var progress = 0F
     private var valueAnimator: ValueAnimator? = null
@@ -55,6 +56,10 @@ class StatsView @JvmOverloads constructor(
                     R.styleable.StatsView_color4,
                     randomColor()
                 )
+            )
+            fillingType = listOf(
+                getInteger(R.styleable.StatsView_fillingType, 0),
+                getInteger(R.styleable.StatsView_fillingType, 1)
             )
         }
     }
@@ -116,11 +121,31 @@ class StatsView @JvmOverloads constructor(
             if (startFrom > maxAngle) return
 
             paint.color = colors.getOrNull(index) ?: randomColor()
-            canvas.drawArc(circle, startFrom, newAngle, false, paint)
+            setFillingType(fillingType[0], canvas, startFrom, angle, newAngle)
             paint.color = colors[0]
             canvas.drawArc(circle, -90F, 1F, false, paint)
+
             startFrom += angle
         }
+    }
+
+    private fun setFillingType(
+        fillingType: Int,
+        canvas: Canvas,
+        startFrom: Float,
+        angle: Float,
+        newAngle: Float
+    ) {
+        when (fillingType) {
+            0 -> canvas.drawArc(
+                circle, startFrom, angle * progress, false, paint
+            )
+            1 -> canvas.drawArc(
+                circle, startFrom, newAngle, false, paint
+            )
+        }
+        invalidate()
+        requestLayout()
     }
 
     private fun update() {
